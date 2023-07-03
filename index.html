@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<link rel="stylesheet" href="index.css">
 
-<svg width="960" height="600"></svg>
+<div id="header"></div>
+<!--<svg class="node-graph" width="960" height="600"></svg>-->
 <div id="node-info" style="display: none; position:absolute; bottom: 0; left: 0">
   <div id="node-details"></div>
   <div id="node-unlock" style="display:none">
@@ -123,8 +125,17 @@ function getTextColor(node, neighbors) {
 var width = window.innerWidth
 var height = window.innerHeight
 
-var svg = d3.select('svg')
-svg.attr('width', width).attr('height', height)
+const zoom = d3.zoom();
+var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", 0.95*height)
+        .attr("viewBox", `${-width/2} ${-height/2} ${width*2} ${height*2}`)
+        .call(zoom.transform, d3.zoomIdentity.scale(3))
+        .call(zoom.on('zoom', (event) => {
+            svg.attr('transform', event.transform);
+        }))
+        .append("g")
+        .attr('transform', `translate(${-width}, ${-height})scale(${2.9})`);
 
 var linkElements,
   nodeElements,
@@ -192,9 +203,11 @@ function openNodeInfo(selectedNode) {
   } else if (!selectedNode.locked) {
     nodeUnlock.style.display = "none";
     nodeEnable.style.display = "block";
+
   } else {
     nodeUnlock.style.display = "none";
     nodeEnable.style.display = "none";
+    
   }
 
 
