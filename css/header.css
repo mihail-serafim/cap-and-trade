@@ -1,0 +1,81 @@
+#header-content {
+    padding-left: 130px;
+    padding-right: 130px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+
+    display: flex;
+    align-items: center;
+}
+
+#header {
+    height: 65px; 
+    background-color: #dbdbd9;
+    filter: drop-shadow(1px 1px 1px #757575);
+ }
+
+ #header-coins {
+    height: 35px;
+    width: 30px;
+    filter: invert(99%) sepia(38%) saturate(5390%) hue-rotate(323deg) brightness(99%) contrast(91%) drop-shadow(1px 1px 1px #757575);
+}
+
+#header-research {
+    height: 35px;
+    width: 30px;
+    filter: invert(30%) sepia(69%) saturate(3022%) hue-rotate(210deg) brightness(104%) drop-shadow(1px 1px 1px #757575);
+    margin-left: 60px;
+}
+
+#header-emissions {
+    height: 40px;
+    width: 35px;
+    filter: invert(25%) sepia(59%) saturate(5105%) hue-rotate(343deg) brightness(99%) contrast(104%) drop-shadow(1px 1px 1px #757575);
+    margin-left: 60px;
+}
+
+#emissions {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.header-label {
+    margin-left: 15px;
+    
+    text-align: center;
+    background-color: #ffffff;
+    border-radius: 4px;
+    
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+
+    font-weight: bold;
+
+    border: 1px solid black;
+}
+
+.progress-container {
+    height: 0.8rem;
+    width: 32rem;
+    border-radius: 0.4rem;
+  
+    background: #000;
+    border: 1px solid black;
+
+    margin-left: 15px;
+  }
+  
+.progress-container .progress {
+    height: 100%;
+    width: 0;
+    border-radius: 0.4rem;
+  
+    background: #ff2130;
+  
+    transition: width 0.4s ease;
+}
+  
+

@@ -1,341 +1,37 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="css/index.css">
+<link rel="stylesheet" href="css/buttons.css">
+<link rel="stylesheet" href="css/header.css">
 
-<div id="header"></div>
-<!--<svg class="node-graph" width="960" height="600"></svg>-->
-<div id="node-info" style="display: none; position:absolute; bottom: 0; left: 0">
-  <div id="node-details"></div>
-  <div id="node-unlock" style="display:none">
-    <button id="unlock-button">Unlock</button>
-  </div>
-  <div id="node-enable" style="display:none">
-    <button id="enable-button">Enable/Disable</button>
+<div id="header">
+  <div id="header-content"></div>
+</div>
+<div class="main">
+  <a href="research.html">
+    <button class="button-1" id="research">Research</button>
+  </a>
+  <a href="news.html">
+    <button class="button-1" id="output">News</button>
+  </a>
+  <a href="trading.html">
+    <button class="button-1" id="trading">Emissions Trading</button>
+  </a>
+  <svg class="node-graph"></svg>
+  <div id="node-info" class="interaction-popup">
+    <div class="popup-wrapper">
+      <div id="node-details"></div>
+      <div id="node-unlock" style="display:none">
+        <button id="unlock-button" class="button-2">Unlock</button>
+      </div>
+      <div id="node-enable" style="display:none">
+        <button id="enable-button" class="button-2">Enable/Disable</button>
+      </div>
   </div>
 </div>
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
-<script>
-var baseNodes = [
-  { id: "mammal", group: 0, label: "Mammals", level: 1, locked: true, enabled: true },
-  { id: "dog"   , group: 0, label: "Dogs"   , level: 2, locked: true, enabled: true },
-  { id: "cat"   , group: 0, label: "Cats"   , level: 2, locked: false, enabled: true },
-  { id: "fox"   , group: 0, label: "Foxes"  , level: 2, locked: true, enabled: true },
-  { id: "elk"   , group: 0, label: "Elk"    , level: 2, locked: true, enabled: true },
-  { id: "insect", group: 1, label: "Insects", level: 1, locked: true, enabled: true },
-  { id: "ant"   , group: 1, label: "Ants"   , level: 2, locked: true, enabled: true },
-  { id: "bee"   , group: 1, label: "Bees"   , level: 2, locked: true, enabled: true },
-  { id: "fish"  , group: 2, label: "Fish"   , level: 1, locked: true, enabled: true },
-  { id: "carp"  , group: 2, label: "Carp"   , level: 2, locked: true, enabled: true },
-  { id: "pike"  , group: 2, label: "Pikes"  , level: 2, locked: true, enabled: true }
-]
 
-var baseLinks = [
-	{ target: "mammal", source: "dog" , strength: 0.1 },
-	{ target: "mammal", source: "cat" , strength: 0.1 },
-  { target: "mammal", source: "fox" , strength: 0.1 },
-  { target: "mammal", source: "elk" , strength: 0.1 },
-  { target: "insect", source: "ant" , strength: 0.1 },
-  { target: "insect", source: "bee" , strength: 0.1 },
-  { target: "fish"  , source: "carp", strength: 0.1 },
-  { target: "fish"  , source: "pike", strength: 0.1 },
-  { target: "cat"   , source: "elk" , strength: 0.1 },
-  { target: "carp"  , source: "ant" , strength: 0.1 },
-  { target: "elk"   , source: "bee" , strength: 0.1 },
-  { target: "dog"   , source: "cat" , strength: 0.1 },
-  { target: "fox"   , source: "ant" , strength: 0.1 },
-	{ target: "pike"  , source: "cat" , strength: 0.1 }
-]
-
-var nodes = [...baseNodes]
-var links = [...baseLinks]
-var unlockedNodes = baseNodes.filter((node) => !node.locked)
-
-function getNeighbors(node) {
-  return baseLinks.reduce(function (neighbors, link) {
-      if (link.target.id === node.id) {
-        neighbors.push(link.source.id)
-      } else if (link.source.id === node.id) {
-        neighbors.push(link.target.id)
-      }
-      return neighbors
-    },
-    [node.id]
-  )
-}
-
-function isNeighborLink(node, link) {
-  return link.target === node.id || link.source === node.id
-}
-
-function isNeighboringUnlocked(link) {
-  for (let i = 0; i < unlockedNodes.length; i++ ) {
-    if (isNeighborLink(unlockedNodes[i], link)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-function getNodeColor(node, selectedNode) {
-  if (node.locked) {
-    return 'gray';
-  }
-
-  if (!node.enabled) {
-    return 'black';
-  }
-
-  if (selectedNode && node.id === selectedNode.id) {
-    return node.level === 1 ? 'blue' : 'green'
-  }
-
-  return node.level === 1 ? 'red' : 'orange'
-}
-
-function getNodeStroke(node, selectedNode) {
-  return node.id === selectedNode.id ? 3 : 1
-}
-
-function getLinkColor(link, isStartup) { 
-  if (isStartup) {
-    var isSourceLocked = nodes.find((node) => link.source === node.id).locked;
-    var isTargetLocked = nodes.find((node) => link.target === node.id).locked;
-  } else {
-    var isSourceLocked = nodes.find((node) => link.source.id === node.id).locked;
-    var isTargetLocked = nodes.find((node) => link.target.id === node.id).locked;
-  }
-
-  if (!isSourceLocked && !isTargetLocked) {
-    return 'rgba(144, 255, 144, 0.73)';
-
-  } else if (!isSourceLocked && isTargetLocked || isSourceLocked && !isTargetLocked) {
-    return 'rgba(253, 239, 135, 0.9)';
-
-  } else {
-    return '#E5E5E5'
-  }
-}
-
-function getTextColor(node, neighbors) {
-  return Array.isArray(neighbors) && neighbors.indexOf(node.id) > -1 ? 'green' : 'black'
-}
-
-var width = window.innerWidth
-var height = window.innerHeight
-
-const zoom = d3.zoom();
-var svg = d3.select("body").append("svg")
-        .attr("width", width)
-        .attr("height", 0.95*height)
-        .attr("viewBox", `${-width/2} ${-height/2} ${width*2} ${height*2}`)
-        .call(zoom.transform, d3.zoomIdentity.scale(3))
-        .call(zoom.on('zoom', (event) => {
-            svg.attr('transform', event.transform);
-        }))
-        .append("g")
-        .attr('transform', `translate(${-width}, ${-height})scale(${2.9})`);
-
-var linkElements,
-  nodeElements,
-  textElements
-
-// we use svg groups to logically group the elements together
-var linkGroup = svg.append('g').attr('class', 'links')
-var nodeGroup = svg.append('g').attr('class', 'nodes')
-var textGroup = svg.append('g').attr('class', 'texts')
-
-// simulation setup with all forces
-var linkForce = d3
-  .forceLink()
-  .id(function (link) { return link.id })
-  .strength(function (link) { return link.strength })
-
-var simulation = d3
-  .forceSimulation()
-  .force('link', linkForce)
-  .force('charge', d3.forceManyBody().strength(-200))
-  .force('center', d3.forceCenter(width / 2, height / 2))
-
-// we use this reference to select/deselect
-// after clicking the same element twice
-var selected
-
-// select node is called on every click
-// we either update the data according to the selection
-// or reset the data if the same node is clicked twice
-function selectNode(selectedNode) {
-  selected = selectedNode; 
-  
-  // we modify the styles to highlight selected nodes
-  nodeElements.attr('stroke-width', function (node) { return getNodeStroke(node, selectedNode) })
-  
-  // Open node info panel
-  openNodeInfo(selectedNode);
-  
-  /*textElements.attr('fill', function (node) { return getTextColor(node, neighbors) })
-  linkElements.attr('stroke', function (link) { return getLinkColor(selectedNode, link) })*/
-}
-
-function openNodeInfo(selectedNode) {
-  var nodeInfo = document.getElementById('node-info');
-  nodeInfo.style.display = "block";
-
-  var nodeDetails = document.getElementById('node-details');
-  nodeDetails.innerHTML = `${selectedNode.label}`
-
-  var nodeUnlock = document.getElementById('node-unlock');
-  var nodeEnable = document.getElementById('node-enable');
-  var neighbors = getNeighbors(selectedNode)
-  
-  var neighborIsUnlocked = false 
-  neighbors.forEach((neighbor) => {
-    if (!nodes.find((node) => node.id === neighbor).locked) {
-      neighborIsUnlocked = true
-    }
-  })
-  
-  if (selectedNode.locked && neighborIsUnlocked) {
-    nodeUnlock.style.display = "block";
-    nodeEnable.style.display = "none";
-    
-  } else if (!selectedNode.locked) {
-    nodeUnlock.style.display = "none";
-    nodeEnable.style.display = "block";
-
-  } else {
-    nodeUnlock.style.display = "none";
-    nodeEnable.style.display = "none";
-    
-  }
-
-
-}
-function unlockNode() {
-  selected.locked = false
-  unlockedNodes.push(selected)
-  openNodeInfo(selected)
-
-  linkElements.attr('stroke', function (link) { return getLinkColor(link) })
-  nodeElements.attr('fill', function (node) { return getNodeColor(node) })
-}
-
-function toggleEnableNode() {
-  selected.enabled = !selected.enabled 
-  nodeElements.attr('fill', function (node) { return getNodeColor(node) })
-}
-
-// this helper simple adds all nodes and links
-// that are missing, to recreate the initial state
-function resetData() {
-  var nodeIds = nodes.map(function (node) { return node.id })
-
-  baseNodes.forEach(function (node) {
-    if (nodeIds.indexOf(node.id) === -1) {
-      nodes.push(node)
-    }
-  })
-
-  links = baseLinks
-}
-
-// diffing and mutating the data
-function updateData(selectedNode) {
-  var neighbors = getNeighbors(selectedNode)
-  var newNodes = baseNodes.filter(function (node) {
-    return neighbors.indexOf(node.id) > -1 || node.level === 1
-  })
-
-  /*var diff = {
-    removed: nodes.filter(function (node) { return newNodes.indexOf(node) === -1 }),
-    added: newNodes.filter(function (node) { return nodes.indexOf(node) === -1 })
-  }
-
-  diff.removed.forEach(function (node) { nodes.splice(nodes.indexOf(node), 1) })
-  diff.added.forEach(function (node) { nodes.push(node) })*/
-
-  links = baseLinks.filter(function (link) {
-    return link.target.id === selectedNode.id || link.source.id === selectedNode.id
-  })
-}
-
-function updateGraph() {
-  // nodes
-  nodeElements = nodeGroup.selectAll('circle')
-    .data(nodes, function (node) { return node.id })
-
-  nodeElements.exit().remove()
-
-  var nodeEnter = nodeElements
-    .enter()
-    .append('circle')
-    .attr('r', 10)
-    .attr('fill', function (node) { return getNodeColor(node) })
-    .attr('stroke', 'black')
-    // we link the selectNode method here
-    // to update the graph on every click
-    .on('click', selectNode)
-
-  // links
-  linkElements = linkGroup.selectAll('line')
-    .data(links, function (link) {
-      return link.target.id + link.source.id
-    })
-
-  linkElements.exit().remove()
-
-  var linkEnter = linkElements
-    .enter().append('line')
-    .attr('stroke-width', 2)
-    .attr('stroke', function (link) { return getLinkColor(link, true) })
-
-  linkElements = linkEnter.merge(linkElements)
-
-  nodeElements = nodeEnter.merge(nodeElements)
-
-  // texts
-  textElements = textGroup.selectAll('text')
-    .data(nodes, function (node) { return node.id })
-
-  textElements.exit().remove()
-
-  var textEnter = textElements
-    .enter()
-    .append('text')
-    .text(function (node) { return node.label })
-    .attr('font-size', 15)
-    .attr('dx', 15)
-    .attr('dy', 4)
-
-  textElements = textEnter.merge(textElements)
-}
-
-function updateSimulation() {
-  updateGraph()
-
-  simulation.nodes(nodes).on('tick', () => {
-    nodeElements
-      .attr('cx', function (node) { return node.x })
-      .attr('cy', function (node) { return node.y })
-    textElements
-      .attr('x', function (node) { return node.x })
-      .attr('y', function (node) { return node.y })
-    linkElements
-      .attr('x1', function (link) { return link.source.x })
-      .attr('y1', function (link) { return link.source.y })
-      .attr('x2', function (link) { return link.target.x })
-      .attr('y2', function (link) { return link.target.y })
-  })
-
-  simulation.force('link').links(links)
-  simulation.alphaTarget(0).restart()
-}
-
-// Adding event listeners
-document.getElementById("unlock-button").addEventListener("click", () => unlockNode())
-document.getElementById("enable-button").addEventListener("click", () => toggleEnableNode())
-// last but not least, we call updateSimulation
-// to trigger the initial render
-updateSimulation()
-</script>
+<!--Insert the header and nodes into the page-->
+<script src="js/header.js"></script>
+<script type="module" src="js/NodeGraph/nodeGraph.js"></script>

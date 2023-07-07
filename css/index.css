@@ -1,0 +1,41 @@
+body {
+    height: 100vh;
+    width: 100%;
+    margin: 0;
+    font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    overflow: hidden;
+}
+
+html {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+.interaction-popup {
+    display: none; 
+    position:absolute;
+    bottom: 15px;
+    left: 15px;
+    background-color: #dbdbd9;
+    height: 30%;
+    width: 15%;
+    border-radius: 6px;
+}
+
+.popup-wrapper {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+#node-unlock, #node-enable {
+    align-self: center;
+    padding-top: 10px;
+}
+
+.main {
+  overflow: hidden;
+}
+
+
