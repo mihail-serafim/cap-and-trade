@@ -2,18 +2,20 @@
   position: absolute; 
   top: 85px; 
   left: 2%;
+  overflow: hidden;
 }
 
 #output {
   position: absolute; 
   top: 85px; 
-  right: 14%;
+  right: 17%;
 }
 
 #trading {
   position: absolute; 
   top: 85px; 
   right: 2%;
+  width: 13%
 }
 
 .button-1 {

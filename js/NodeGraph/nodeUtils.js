@@ -1,16 +1,24 @@
 import { baseLinks } from "./graphDefaults.js"
 
 export function getNeighbors(node) {
-return baseLinks.reduce(function (neighbors, link) {
-    if (link.target.id === node.id) {
-        neighbors.push(link.source.id)
-    } else if (link.source.id === node.id) {
-        neighbors.push(link.target.id)
+    return baseLinks.reduce(function (neighbors, link) {
+        if (link.target.id === node.id) {
+            neighbors.push(link.source.id)
+        } else if (link.source.id === node.id) {
+            neighbors.push(link.target.id)
+        }
+        return neighbors
+        },
+        [node.id]
+    )
+}
+
+export function getNodeOpacity(node) {
+    if (!node.enabled) {
+        return 0.6;
+    } else {
+        return 1;
     }
-    return neighbors
-    },
-    [node.id]
-)
 }
 
 export function getNodeColor(node, selectedNode) {
@@ -18,9 +26,9 @@ export function getNodeColor(node, selectedNode) {
         return 'gray';
     }
 
-    if (!node.enabled) {
-        return 'black';
-    }
+    //if (!node.enabled) {
+    //    return 'black';
+    //}
 
     if (selectedNode && node.id === selectedNode.id) {
         return node.level === 1 ? 'blue' : 'green'

@@ -1,5 +1,5 @@
 import { baseNodes, baseLinks } from './graphDefaults.js'  
-import { getNodeColor, getNeighbors, getLinkColor, getNodeStroke } from './nodeUtils.js'
+import { getNodeColor, getNeighbors, getLinkColor, getNodeStroke, getNodeOpacity } from './nodeUtils.js'
 
 var nodes = [...baseNodes]
 var links = [...baseLinks]
@@ -103,7 +103,7 @@ function unlockNode() {
 // Enables or disables a node
 function toggleEnableNode() {
     selected.enabled = !selected.enabled 
-    nodeElements.attr('fill', function (node) { return getNodeColor(node) })
+    nodeElements.classed("disabled", function (node) { return !node.enabled })
 }
 
 function updateGraph() {

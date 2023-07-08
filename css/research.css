@@ -1,0 +1,32 @@
+#researcha {
+    width: 100%;
+    display: flex;
+    flex-direction: column; 
+}
+
+#research-content {
+    height: 100%;
+    overflow: scroll;
+}
+
+.research-label {
+    font-weight: bold;
+    font-size: 35px;
+
+    margin-top: 20px;
+    margin-left: 40%;
+    margin-right: 40%;
+}
+
+.tree-wrapper {
+    margin-top: 25px
+}
+
+.tree-wrapper:last-child {
+    margin-bottom: 50px
+}
+
+.link {
+    fill: none;
+    stroke-width: 3px;
+  }

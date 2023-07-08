@@ -9,7 +9,7 @@ const changeProgress = (progress) => {
 function updateHeader() {
     var currency = 1000;
     var research = 10;
-    var currentEmissions = 70
+    var currentEmissions = 130
     var emissionsCap = 150
 
     // update values
@@ -28,7 +28,8 @@ function updateHeader() {
         </div>
       </div>
     `
+
+    setTimeout(() => changeProgress(currentEmissions/emissionsCap*100), 250);
 }
 
 updateHeader();
-setTimeout(() => changeProgress(40), 250);
