@@ -106,20 +106,20 @@
 }
 
 .button-2:hover {
-  background-color: #F3F4F6;
+  /*background-color: #F3F4F6;*/
   text-decoration: none;
   transition-duration: 0.1s;
 }
 
 .button-2:disabled {
-  background-color: #FAFBFC;
+  /*background-color: #FAFBFC;*/
   border-color: rgba(27, 31, 35, 0.15);
   color: #959DA5;
   cursor: default;
 }
 
 .button-2:active {
-  background-color: #EDEFF2;
+  /*background-color: #EDEFF2;*/
   box-shadow: rgba(225, 228, 232, 0.2) 0 1px 0 inset;
   transition: none 0s;
 }
@@ -134,4 +134,12 @@
 
 .button-2:-webkit-details-marker {
   display: none;
+}
+
+.enabled {
+  background-color: #ff5b5b;
+}
+
+.disabled {
+  background-color: #43ff5f;
 }

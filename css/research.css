@@ -1,12 +1,10 @@
-#researcha {
-    width: 100%;
-    display: flex;
-    flex-direction: column; 
-}
-
 #research-content {
     height: 100%;
     overflow: scroll;
+}
+
+#research-info {
+    right: 30px;
 }
 
 .research-label {
@@ -16,6 +14,10 @@
     margin-top: 20px;
     margin-left: 40%;
     margin-right: 40%;
+}
+
+.research-icon {
+    filter: invert(30%) sepia(69%) saturate(3022%) hue-rotate(210deg) brightness(104%);
 }
 
 .tree-wrapper {
@@ -29,4 +31,4 @@
 .link {
     fill: none;
     stroke-width: 3px;
-  }
+}
