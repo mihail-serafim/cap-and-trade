@@ -1,276 +1,134 @@
 //
 export const productionTreeData = {
-    "name": "Eve",
-    "id": "a",
-    "value": 15,
-    "type": "black",
-    "level": "yellow",
+    "name": "",
+    "id": "1",
+    "type": "display",
     "locked": false,
-    "cost": 5,
+    "cost": "",
     "children": [
       {
-        "name": "Seth",
-        "id": "b",
-        "value": 10,
-        "type": "grey",
-        "level": "red",
-        "locked": true,
-        "cost": 5,
+        "name": "Production",
+        "id": "2",
+        "type": "display",
+        "locked": false,
+        "cost": "",
         "children": [
           {
-            "name": "Enos",
-            "id": "c",
-            "value": 7.5,
-            "type": "grey",
-            "level": "purple",
+            "name": "Production Type 1",
+            "id": "prod-1",
+            "multiplier": 1.1,
+            "type": "production",
             "locked": true,
             "cost": 5,
+            "description": "Produce 10% more of good A.",
           },
           {
-            "name": "Noam",
-            "id": "d",
-            "value": 7.5,
-            "type": "grey",
-            "level": "purple",
+            "name": "Production Type 2",
+            "id": "prod-2",
+            "multiplier": 1.1, 
+            "type": "production",
             "locked": true,
             "cost": 5,
+            "description": "Produce 10% more of good B.",
+          },
+          {
+            "name": "Research Mandates",
+            "id": "prod-3",
+            "multiplier": 1.15,
+            "type": "production",
+            "locked": true,
+            "cost": 7.5,
+            "description": "Produce 15% more research points.",
             "children": [              
                 {
-                  "name": "Noam",
-                  "id": "e",
-                  "value": 7.5,
-                  "type": "grey",
-                  "level": "purple",
+                  "name": "Research Mandates II",
+                  "id": "prod-4",
+                  "multiplier": 1.15,
+                  "type": "production",
                   "locked": true,
-                  "cost": 5,
-                  "children": [
-                      {
-                        "name": "Noam",
-                        "id": "f",
-                        "value": 7.5,
-                        "type": "grey",
-                        "level": "purple",
-                        "locked": true,
-                        "cost": 5,
-                      }
-                  ]
+                  "cost": 10,
+                  "description": "Produce an additional 10% more research points.",
                 }             
             ]
           }
         ]
       },
       {
-        "name": "Abel",
-        "id": "g",
-        "value": 10,
-        "type": "grey",
-        "level": "blue",
-        "locked": true,
-        "cost": 5,
-      },
-      {
-        "name": "Awan",
-        "id": "h",
-        "value": 10,
-        "type": "grey",
-        "level": "green",
-        "locked": true,
-        "cost": 5,
+        "name": "Emissions",
+        "id": "3",
+        "type": "display",
+        "locked": false,
+        "cost": "",
         "children": [
           {
-            "name": "Enoch",
-            "id": "i",
-            "value": 7.5,
-            "type": "grey",
-            "level": "orange",
+            "name": "Clean Production",
+            "id": "emis-1",
+            "multiplier": 0.8,
+            "type": "emissions",
+            "locked": true,
+            "cost": 10,
+            "description": "Lower current emissions by 20%.",
+          },
+          {
+            "name": "Lobby Government",
+            "id": "emis-2",
+            "multiplier": 0.5,
+            "type": "emissions",
+            "locked": true,
+            "cost": 10,
+            "description": "Reduce the fine for exceeding emissions limits by 50%.",
+            "children": [
+              {
+                "name": "R&D Allowances",
+                "id": "emis-3",
+                "multiplier": 0.4,
+                "type": "emissions",
+                "locked": true,
+                "cost": 15,
+                "description": "Lower emissions of all research nodes by 60%.",
+              },
+            ]
+          },       
+        ]
+      },
+      {
+        "name": "Selling",
+        "id": "4",
+        "type": "display",
+        "locked": false,
+        "cost": "",
+        "children": [
+          {
+            "name": "Quality goods",
+            "id": "sell-1",
+            "multiplier": 1.1,
+            "type": "selling",
             "locked": true,
             "cost": 5,
+            "description": "All goods sell for 10% more.",
+            "children" : [
+              {
+                "name": "Quality Type A",
+                "id": "sell-2",
+                "multiplier": 1.2,
+                "type": "selling",
+                "locked": true,
+                "cost": 10,
+                "description": "Goods of type A sell for 20% more.",
+              },
+              {
+                "name": "Quality Type B",
+                "id": "sell-3",
+                "multiplier": 1.2,
+                "type": "selling",
+                "locked": true,
+                "cost": 10,
+                "description": "Goods of type B sell for 20% more.",
+              },
+            ]
           }
         ]
       },
     ]
   };
 
-export const emissionsTreeData = {
-    "name": "First upgrade",
-    "id": "j",
-    "value": 15,
-    "type": "black",
-    "level": "yellow",
-    "locked": false,
-    "cost": 5,
-    "children": [
-      {
-        "name": "Second upgrade",
-        "id": "k",
-        "value": 10,
-        "type": "grey",
-        "level": "red",
-        "locked": true,
-        "cost": 6,
-        "children": [
-          {
-            "name": "Third upgrade",
-            "id": "l",
-            "value": 7.5,
-            "type": "grey",
-            "level": "purple",
-            "locked": true,
-            "cost": 5,
-          },
-          {
-            "name": "Noam",
-            "id": "m",
-            "value": 7.5,
-            "type": "grey",
-            "level": "purple",
-            "locked": true,
-            "cost": 5,
-            "children": [              
-                {
-                  "name": "Noam",
-                  "id": "n",
-                  "value": 7.5,
-                  "type": "grey",
-                  "level": "purple",
-                  "locked": true,
-                  "cost": 5,
-                  "children": [
-                      {
-                        "name": "Noam",
-                        "id": "o",
-                        "value": 7.5,
-                        "type": "grey",
-                        "level": "purple",
-                        "cost": 5,
-                        "locked": true,
-                      }
-                  ]
-                }             
-            ]
-          }
-        ]
-      },
-      {
-        "name": "Abel",
-        "id": "p",
-        "value": 10,
-        "type": "grey",
-        "level": "blue",
-        "cost": 5,
-        "locked": true,
-      },
-      {
-        "name": "Awan",
-        "id": "q",
-        "value": 10,
-        "type": "grey",
-        "level": "green",
-        "locked": true,
-        "cost": 5,
-        "children": [
-          {
-            "name": "Enoch",
-            "id": "r",
-            "value": 7.5,
-            "type": "grey",
-            "level": "orange",
-            "locked": true,
-            "cost": 5,
-          }
-        ]
-      },
-    ]
-  };
-
-  export const costTreeData = {
-    "name": "First upgrade",
-    "id": "j",
-    "value": 15,
-    "type": "black",
-    "level": "yellow",
-    "locked": false,
-    "cost": 5,
-    "children": [
-      {
-        "name": "Second upgrade",
-        "id": "k",
-        "value": 10,
-        "type": "grey",
-        "level": "red",
-        "locked": true,
-        "cost": 6,
-        "children": [
-          {
-            "name": "Third upgrade",
-            "id": "l",
-            "value": 7.5,
-            "type": "grey",
-            "level": "purple",
-            "locked": true,
-            "cost": 5,
-          },
-          {
-            "name": "Noam",
-            "id": "m",
-            "value": 7.5,
-            "type": "grey",
-            "level": "purple",
-            "locked": true,
-            "cost": 5,
-            "children": [              
-                {
-                  "name": "Noam",
-                  "id": "n",
-                  "value": 7.5,
-                  "type": "grey",
-                  "level": "purple",
-                  "locked": true,
-                  "cost": 5,
-                  "children": [
-                      {
-                        "name": "Noam",
-                        "id": "o",
-                        "value": 7.5,
-                        "type": "grey",
-                        "level": "purple",
-                        "cost": 5,
-                        "locked": true,
-                      }
-                  ]
-                }             
-            ]
-          }
-        ]
-      },
-      {
-        "name": "Abel",
-        "id": "p",
-        "value": 10,
-        "type": "grey",
-        "level": "blue",
-        "cost": 5,
-        "locked": true,
-      },
-      {
-        "name": "Awan",
-        "id": "q",
-        "value": 10,
-        "type": "grey",
-        "level": "green",
-        "locked": true,
-        "cost": 5,
-        "children": [
-          {
-            "name": "Enoch",
-            "id": "r",
-            "value": 7.5,
-            "type": "grey",
-            "level": "orange",
-            "locked": true,
-            "cost": 5,
-          }
-        ]
-      },
-    ]
-  };

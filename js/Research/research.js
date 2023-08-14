@@ -1,6 +1,7 @@
 import { updateHeader } from "../header.js";
-import { productionTreeData, emissionsTreeData } from "./researchDefaults.js";
-import { getNodeColor, getNodeStroke, getLinkColor } from "./researchUtils.js";
+import { productionTreeData } from "./researchDefaults.js";
+import { getNodeColor, getNodeStroke, getLinkColor, updateDBResearch } from "./researchUtils.js";
+import { getTotalEmissions } from "../NodeGraph/nodeUtils.js";
 
 var selected;
 var allNodeElements = [], allLinkElements = [];
@@ -9,6 +10,10 @@ var treeNodes = [];
 
 // select node is called on clicking a node
 function selectNode(selectedNode) {
+    if (selectedNode.data.type === 'display') {
+        return;
+    }
+
     selected = selectedNode;
 
     d3.selectAll('rect').style('stroke-width', function (node) { return getNodeStroke(node, selectedNode) })
@@ -28,7 +33,7 @@ function unlockNode() {
 
     research = research - selected.data.cost
 
-    // TODO: send new values to DB
+    console.log(treeNodes);
     updateHeader(currency, research, currentEmissions, emissionsCap);
 
     d3.selectAll('rect').transition().duration(500).style("fill", node => getNodeColor(node))
@@ -71,9 +76,11 @@ function displayTree(treeData, svgId) {
 
     //  assigns the data to a hierarchy using parent-child relationships
     let nodes = d3.hierarchy(treeData, d => d.children);
+    
 
     // maps the node data to the tree layout
     nodes = treemap(nodes);
+    
     treeNodes.push(nodes);
 
     const zoom = d3.zoom();
@@ -83,7 +90,7 @@ function displayTree(treeData, svgId) {
     // moves the 'group' element to the top left margin
     const svg = d3.select('#' + svgId)
             .attr("width", width)
-            .attr("height", height/2)
+            .attr("height", height)
             .call(zoom.transform, d3.zoomIdentity.scale(1))
             .call(zoom.on('zoom', (event) => {
                 svg.attr('transform', event.transform);
@@ -117,8 +124,8 @@ function displayTree(treeData, svgId) {
     // adds the text to the node
     nodeElements.append("text")
         .attr("dy", ".35em")
-        .attr("x", d => d.children ? (d.data.value) * -1 : d.data.value + nodeWidth)
-        .attr("y", d => - (d.data.value + 5))
+        .attr("x", d => d.children ? 10 * -1 : 10 + nodeWidth)
+        .attr("y", d => - 15)
         .style("text-anchor", d => d.children ? "end" : "start")
         .style("font-size", "26px")
         .style("font-weight", 500)
@@ -126,11 +133,12 @@ function displayTree(treeData, svgId) {
 
     // adds the rect to the node
     nodeElements.append("rect")
-        .attr("width", nodeWidth)
-        .attr("height", nodeWidth)
+        .attr("width", node => (node.data.type === 'display' ? nodeWidth/2 : nodeWidth))
+        .attr("height", node => (node.data.type === 'display' ? nodeWidth/2 : nodeWidth))
         .style("stroke", 'black')
         .style("stroke-width", 2)
         .style("fill", node => getNodeColor(node))
+        .attr("y", node => (node.data.type === 'display' ? nodeWidth/4 : 0))
         .on('click', selectNode)
     
     nodeElements.append("svg:image")
@@ -139,7 +147,7 @@ function displayTree(treeData, svgId) {
         .attr('width', 20)
         .attr('height', 24)
         .classed('research-icon', true)
-        .attr("xlink:href", "icons/flask-solid.svg");
+        .attr("xlink:href", node => (node.data.type === 'display' ? "" : "icons/flask-solid.svg"));
 
     nodeElements.append("text")
         .attr("x", nodeWidth/4 + 15)
@@ -152,21 +160,49 @@ function displayTree(treeData, svgId) {
     allLinkElements.push(linkElements)
 }
 
-// On page load
-var currency = 400
-var research = 10
-var currentEmissions = 120
-var emissionsCap = 150
 
+// On page load
+var userId = 5;
+
+var nodes;
+var researchTree = productionTreeData;
+var currency;
+var research;
+var currentEmissions;
+var emissionsCap;
+
+try {
+    // Read user data from DB on page load
+    var user = await fetch(`http://localhost/cap_and_trade/get-user?id=${userId}`);
+    user = await user.json();
+    console.log(user);
+    
+} catch (e) {
+    console.log('error occurred when reading user data');
+}
+
+if (user.status !== 0) {
+    user = user.info[0];
+
+    nodes = JSON.parse(user.node_graph);
+    researchTree = JSON.parse(user.research_trees);
+    
+    console.log('current user found')
+    console.log(researchTree)
+
+    currency = parseFloat(user.currency);
+    research = parseFloat(user.research);
+    currentEmissions = getTotalEmissions(nodes);
+    emissionsCap = parseFloat(user.emissions_cap);
+} 
 
 // Update header
 updateHeader(currency, research, currentEmissions, emissionsCap);
 
 // Adding event listeners
-document.getElementById("unlock-button").addEventListener("click", () => unlockNode())
+document.getElementById("unlock-button").addEventListener("click", () => unlockNode());
+
 
 // Rendering trees
-displayTree(productionTreeData, "production-research");
-//displayTree(emissionsTreeData, "emissions-research");
-//displayTree(productionTreeData, "cost-research");
+displayTree(researchTree, "production-research");
 

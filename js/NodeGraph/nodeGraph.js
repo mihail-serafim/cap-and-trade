@@ -1,6 +1,6 @@
 import { updateHeader } from '../header.js'
 import { baseNodes, baseLinks } from './graphDefaults.js'  
-import { productionTreeData, emissionsTreeData, costTreeData } from '../Research/researchDefaults.js'
+import { productionTreeData } from '../Research/researchDefaults.js'
 import { getNodeColor, 
          getNeighbors, 
         getLinkColor, getNodeStroke, updateEnableButton, getTotalEmissions, writeUser, updateDBNodes, getNodeX, getNodeY } from './nodeUtils.js'
@@ -23,7 +23,7 @@ var linkElements,
 nodeElements,
 textElements
 
-// we use svg groups to logically group the elements together
+// Svg groups logically group the elements together
 var linkGroup = svg.append('g').attr('class', 'links')
 var nodeGroup = svg.append('g').attr('class', 'nodes')
 var textGroup = svg.append('g').attr('class', 'texts')
@@ -47,14 +47,13 @@ var simulation = d3
     .force('charge', d3.forceManyBody().strength(-200))
     .force('center', d3.forceCenter(width / 2, height / 2))
 
-// we use this reference to select/deselect
 var selected
 
-// select node is called on clicking a node
+// selectNode is called on clicking a node
 function selectNode(selectedNode) {
     selected = selectedNode; 
 
-    // we modify the styles to highlight selected nodes
+    // Modify the styles to highlight selected nodes
     nodeElements.transition().duration(75).attr('stroke-width', function (node) { return getNodeStroke(node, selectedNode) })
 
     // Open node info panel
@@ -228,7 +227,7 @@ function updateSimulation() {
 
 // On page load, query DB for user. If entry doesn't exist, write user with default nodes and initialize session with defaults
 // If user does exist, populate nodes and values with values from db 
-var userId = 2;
+var userId = 5;
 
 var nodes;
 var currency;
@@ -252,11 +251,11 @@ try {
 if (user.status === 0) {
     
     // Setting default values
-    nodes = [...baseNodes]
-    currency = 1000
-    research = 10
-    currentEmissions = getTotalEmissions(nodes)
-    emissionsCap = 200
+    nodes = [...baseNodes];
+    currency = 1000;
+    research = 10;
+    currentEmissions = getTotalEmissions(nodes);
+    emissionsCap = 200;
 
     // Write default values to DB
     var userDefaults = {
@@ -279,7 +278,7 @@ if (user.status === 0) {
 
     currency = parseFloat(user.currency);
     research = parseFloat(user.research);
-    currentEmissions = getTotalEmissions(nodes)
+    currentEmissions = getTotalEmissions(nodes);
     emissionsCap = parseFloat(user.emissions_cap);
 }
 
