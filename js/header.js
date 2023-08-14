@@ -1,8 +1,3 @@
-const changeProgress = (progress) => {
-  const progressbar = document.querySelector(".progress");
-  progressbar.style.width = `${progress}%`;
-};
-
 // Update/set up the header HTML
 export function updateHeader(currency = 1000, research = 10, currentEmissions = 130, emissionsCap = 150) {
     // update values
@@ -16,11 +11,6 @@ export function updateHeader(currency = 1000, research = 10, currentEmissions = 
       <div id="emissions" title="Emissions">
         <img id="header-emissions" src="/icons/smog-solid.svg" alt="Emissions"></img>
         <div class="header-label"> ${currentEmissions} / ${emissionsCap} </div>
-        <div class="progress-container">
-          <div class="progress"></div>
-        </div>
       </div>
     `
-
-    changeProgress(currentEmissions/emissionsCap*100);
 }

@@ -69,3 +69,11 @@ export async function updateDBResearch(id, researchTree, currency, research, cur
     res = await res.json()
     console.log(res)
 }
+
+export function formatResearchTree(researchTree) {
+    var width = window.innerWidth
+    var height = window.innerHeight
+    const treemap = d3.tree().size([height, width]);
+    //  assigns the data to a hierarchy using parent-child relationships
+    return treemap(d3.hierarchy(researchTree, d => d.children));
+}
