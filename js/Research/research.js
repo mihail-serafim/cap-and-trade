@@ -33,7 +33,15 @@ function unlockNode() {
 
     research = research - selected.data.cost
 
-    console.log(treeNodes);
+    // TODO write recursive function to parse tree and change it into original tree format so it can be uploaded to mysql
+    var tree = {
+        "children": treeNodes[0].children,
+        ...treeNodes[0].data,
+    }
+
+    console.log(tree)
+    console.log(treeNodes[0])
+    updateDBResearch(userId, tree, currency, research, currentEmissions, emissionsCap); 
     updateHeader(currency, research, currentEmissions, emissionsCap);
 
     d3.selectAll('rect').transition().duration(500).style("fill", node => getNodeColor(node))
@@ -162,7 +170,7 @@ function displayTree(treeData, svgId) {
 
 
 // On page load
-var userId = 5;
+var userId = 6;
 
 var nodes;
 var researchTree = productionTreeData;

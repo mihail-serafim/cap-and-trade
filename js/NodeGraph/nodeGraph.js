@@ -4,6 +4,7 @@ import { productionTreeData } from '../Research/researchDefaults.js'
 import { getNodeColor, 
          getNeighbors, 
         getLinkColor, getNodeStroke, updateEnableButton, getTotalEmissions, writeUser, updateDBNodes, getNodeX, getNodeY } from './nodeUtils.js'
+import { formatResearchTree } from '../Research/researchUtils.js';
 
 var width = window.innerWidth
 var height = window.innerHeight
@@ -208,16 +209,16 @@ function updateSimulation() {
 
     simulation.nodes(nodes).on('tick', () => {
         nodeElements
-        .attr('cx', function (node) { return getNodeX(node, nodes); })
-        .attr('cy', function (node) { return getNodeY(node, nodes); })
+        .attr('cx', function (node) { return getNodeX(node); })
+        .attr('cy', function (node) { return getNodeY(node); })
         textElements
-        .attr('x', function (node) { return getNodeX(node, nodes); })
-        .attr('y', function (node) { return getNodeY(node, nodes); })
+        .attr('x', function (node) { return getNodeX(node); })
+        .attr('y', function (node) { return getNodeY(node); })
         linkElements
-        .attr('x1', function (link) { return getNodeX(link.source, nodes); })
-        .attr('y1', function (link) { return getNodeY(link.source, nodes); })
-        .attr('x2', function (link) { return getNodeX(link.target, nodes); })
-        .attr('y2', function (link) { return getNodeY(link.target, nodes); })
+        .attr('x1', function (link) { return getNodeX(link.source); })
+        .attr('y1', function (link) { return getNodeY(link.source); })
+        .attr('x2', function (link) { return getNodeX(link.target); })
+        .attr('y2', function (link) { return getNodeY(link.target); })
     })
 
     simulation.force('link').links(links)
@@ -227,7 +228,7 @@ function updateSimulation() {
 
 // On page load, query DB for user. If entry doesn't exist, write user with default nodes and initialize session with defaults
 // If user does exist, populate nodes and values with values from db 
-var userId = 5;
+var userId = 6;
 
 var nodes;
 var currency;
@@ -256,6 +257,7 @@ if (user.status === 0) {
     research = 10;
     currentEmissions = getTotalEmissions(nodes);
     emissionsCap = 200;
+
 
     // Write default values to DB
     var userDefaults = {

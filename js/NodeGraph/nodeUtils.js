@@ -14,32 +14,16 @@ export function getNeighbors(node) {
     )
 }
 
-export function getNodeX(currentNode, allNodes) {
+export function getNodeX(currentNode) {
     var width = window.innerWidth
     var radius = 6;
-
-    var nodeX;
-    var node;
-
-    /*for (let i = 0; i < allNodes.length; i++) {
-        node = allNodes[i]
-
-        if (Math.abs(node.x - currentNode.x < radius)) {
-            console.log(`overlap between ${currentNode.id} and ${node.id}`);
-            nodeX = currentNode.x > node.x ? currentNode.x + radius*4 : currentNode.x - radius*4
-            break;
-        } else {
-            nodeX = currentNode.x
-        }
-    }*/
 
     return Math.max(radius, Math.min(width - radius, currentNode.x));
 }
 
-export function getNodeY(currentNode, allNodes) {
+export function getNodeY(currentNode) {
     var height = window.innerHeight
     var radius = 6;
-
 
     return Math.max(190, Math.min(height - radius - 200, currentNode.y));
 }

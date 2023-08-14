@@ -67,7 +67,7 @@ export const productionTreeData = {
             "type": "emissions",
             "locked": true,
             "cost": 10,
-            "description": "Lower current emissions by 20%.",
+            "description": "Lower emissions caused by production by 20%.",
           },
           {
             "name": "Lobby Government",
