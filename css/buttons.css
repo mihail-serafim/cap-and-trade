@@ -5,13 +5,13 @@
   overflow: hidden;
 }
 
-#output {
+#news-button {
   position: absolute; 
   top: 85px; 
   right: 17%;
 }
 
-#trading {
+#trading-button {
   position: absolute; 
   top: 85px; 
   right: 2%;

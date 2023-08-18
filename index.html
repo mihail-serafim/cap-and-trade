@@ -3,6 +3,8 @@
 <link rel="stylesheet" href="css/index.css">
 <link rel="stylesheet" href="css/buttons.css">
 <link rel="stylesheet" href="css/header.css">
+<link rel="stylesheet" href="css/emissions-market.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
 <div id="header">
   <div id="header-content"></div>
@@ -11,12 +13,41 @@
   <a href="research.html">
     <button class="button-1" id="research">Research</button>
   </a>
-  <a href="news.html">
-    <button class="button-1" id="output">News</button>
-  </a>
-  <a href="trading.html">
-    <button class="button-1" id="trading">Emissions Trading</button>
-  </a>
+  
+  <button class="button-1" id="news-button">News</button>
+  <div id="news">News</div>
+
+  <button class="button-1" id="trading-button">Emissions Trading</button>
+  <div id="trading">
+    Emissions Market
+    <table class="table table-striped">
+      <tr  class="bg-info"> 
+          <th class="centered">Quantity</th>
+          <th class="centered">Price</th>
+          <th></th>
+      </tr>
+      <tbody id="trading-table"></tbody>
+    </table>
+    <div>
+      Sell Your Emissions Capacity
+      <div>
+        <form class="form" id="trading-form">
+      
+          <label for="quantity" class="form-label">Quantity</label>
+          <input type="number" placeholder="Quantity" class="form-input" min="1" id="trading-quantity" />
+          
+          <label for="price" class="form-label">Price</label>
+          <input type="number" placeholder="Price" class="form-input" min="1" id="trading-price" />
+
+          <button type="submit" placeholder="Price" class="form-input" id="trading-submit" >Post Offer</button>
+          
+        </form>
+      </div>
+    </div>
+
+
+  </div>
+
   <svg class="node-graph"></svg>
   <div id="node-info" class="interaction-popup">
     <div class="popup-wrapper">

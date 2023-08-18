@@ -134,3 +134,80 @@ export async function updateDBNodes(id, nodes, currency, research, currentEmissi
     res = await res.json()
     console.log(res)
 }
+
+export async function getEmissionsMarketData() {
+    try {
+        var data = await fetch(`http://localhost/cap_and_trade/get-trading-data`);
+        data = await data.json();
+        console.log(data);
+        
+    } catch (e) {
+        console.log('error occurred when reading market data');
+    }
+    
+    return data;
+}
+
+export function buildMarketTable(userId, data){
+    var table = document.getElementById('trading-table')
+    
+    var row = "";
+    var buttonText;
+    for (var i = 0; i < data.length; i++){
+        if (data[i].userId != userId) {
+            buttonText = `Purchase`
+        } else {
+            buttonText = `<img id="trading-cancel" src="/icons/x-solid.svg" alt="X" data-id="${data[i].id}"></img>`
+        }
+        row += `<tr>
+                        <td class="centered">${data[i].quantity}</td>
+                        <td class="centered">${data[i].price}</td>
+                        <td class="centered"><button class="market-button" data-id="${data[i].id}">${buttonText}</button></td>
+                </tr>` 
+    }
+    table.innerHTML = row
+
+    var marketButtons = document.querySelectorAll(".market-button");
+    marketButtons.forEach((button) => {
+        button.addEventListener('click', purchaseMarketOffer);
+    })
+}
+
+export async function sendMarketOffer(userId, quantity, price) {
+    var res = await fetch('http://localhost/cap_and_trade/create-offer', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            userId: userId,
+            quantity: quantity,
+            price: price,
+        })
+    });
+
+    res = await res.json();
+    console.log(res);
+}
+
+export async function purchaseMarketOffer(event) {
+    event.preventDefault();
+
+    console.log(event.target.dataset.id);
+    // TODO check if money is enough to purchase
+    // if it is, call php script and then update header values by reading from DB.
+}
+
+export async function getUser(userId) {
+    try {
+        // Read user data from DB on page load
+        var user = await fetch(`http://localhost/cap_and_trade/get-user?id=${userId}`);
+        user = await user.json();
+        console.log(user);
+        
+    } catch (e) {
+        console.log('error occurred when reading user data');
+    }
+
+    return user;
+}

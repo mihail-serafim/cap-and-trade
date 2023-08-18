@@ -69,5 +69,21 @@ html {
     padding-right: 5px;
 }
 
+#news {
+    position: absolute; 
+    top: 150px; 
+    right: 17%;
+
+    width: 15%;
+
+    border-radius: 5px;
+    background-color: #dbdbd9;
+    filter: drop-shadow(1px 1px 1px #757575);
+
+    display: none;
+}
+
+
+
 
 

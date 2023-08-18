@@ -1,7 +1,7 @@
 import { updateHeader } from "../header.js";
 import { productionTreeData } from "./researchDefaults.js";
 import { getNodeColor, getNodeStroke, getLinkColor, updateDBResearch } from "./researchUtils.js";
-import { getTotalEmissions } from "../NodeGraph/nodeUtils.js";
+import { getTotalEmissions, getUser } from "../NodeGraph/nodeUtils.js";
 
 var selected;
 var allNodeElements = [], allLinkElements = [];
@@ -179,15 +179,7 @@ var research;
 var currentEmissions;
 var emissionsCap;
 
-try {
-    // Read user data from DB on page load
-    var user = await fetch(`http://localhost/cap_and_trade/get-user?id=${userId}`);
-    user = await user.json();
-    console.log(user);
-    
-} catch (e) {
-    console.log('error occurred when reading user data');
-}
+var user = await getUser(userId);
 
 if (user.status !== 0) {
     user = user.info[0];

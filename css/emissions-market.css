@@ -1,0 +1,24 @@
+#trading {
+    position: absolute; 
+    top: 150px;
+    right: 2%;
+    
+    width: 25%;
+
+    border-radius: 5px;
+    background-color: #dbdbd9;
+    filter: drop-shadow(1px 1px 1px #757575);
+
+    display: none;
+}
+
+#trading-cancel {
+    width: 18px;
+    padding: 1px;
+
+    filter: invert(25%) sepia(51%) saturate(5066%) hue-rotate(335deg) brightness(83%) contrast(110%);
+}
+
+.centered {
+    text-align: center;
+}

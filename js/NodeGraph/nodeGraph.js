@@ -1,10 +1,23 @@
 import { updateHeader } from '../header.js'
 import { baseNodes, baseLinks } from './graphDefaults.js'  
 import { productionTreeData } from '../Research/researchDefaults.js'
-import { getNodeColor, 
-         getNeighbors, 
-        getLinkColor, getNodeStroke, updateEnableButton, getTotalEmissions, writeUser, updateDBNodes, getNodeX, getNodeY } from './nodeUtils.js'
-import { formatResearchTree } from '../Research/researchUtils.js';
+import { 
+    getNodeColor, 
+    getNeighbors, 
+    getLinkColor, 
+    getNodeStroke, 
+    updateEnableButton,
+    getTotalEmissions, 
+    writeUser, 
+    updateDBNodes, 
+    getNodeX, 
+    getNodeY,
+    getEmissionsMarketData,
+    buildMarketTable,
+    sendMarketOffer,
+    getUser,
+    purchaseMarketOffer,
+} from './nodeUtils.js'
 
 var width = window.innerWidth
 var height = window.innerHeight
@@ -48,7 +61,44 @@ var simulation = d3
     .force('charge', d3.forceManyBody().strength(-200))
     .force('center', d3.forceCenter(width / 2, height / 2))
 
+// Track which node is currently selected, and track which panel is open (news/emissions market)
 var selected
+var news = document.getElementById('news');
+var trading = document.getElementById('trading');
+
+async function openEmissionsMarket() {
+    news.style.display = 'none';
+    trading.style.display = 'block';
+
+    var emissionsMarketData = await getEmissionsMarketData();
+    buildMarketTable(userId, emissionsMarketData.info);
+}
+
+async function submitMarketOffer(event) {
+    event.preventDefault();
+    
+    var quantity = document.getElementById("trading-quantity").value;
+    var price = document.getElementById("trading-price").value;
+
+    await sendMarketOffer(userId, quantity, price);
+
+    var emissionsMarketData = await getEmissionsMarketData();
+    buildMarketTable(userId, emissionsMarketData.info);
+}
+
+function closeEmissionsMarket() {
+    trading.style.display = 'none';
+}
+
+function openNews() {
+    news.style.display = 'block';
+    trading.style.display = 'none';
+}
+
+function closeNews() {
+    news.style.display = 'none';
+}
+
 
 // selectNode is called on clicking a node
 function selectNode(selectedNode) {
@@ -238,15 +288,7 @@ var emissionsCap;
 
 var links = [...baseLinks]
 
-try {
-    // Read user data from DB on page load
-    var user = await fetch(`http://localhost/cap_and_trade/get-user?id=${userId}`);
-    user = await user.json();
-    console.log(user);
-    
-} catch (e) {
-    console.log('error occurred when reading user data');
-}
+var user = await getUser(userId);
 
 // New user
 if (user.status === 0) {
@@ -277,7 +319,6 @@ if (user.status === 0) {
     user = user.info[0];
 
     nodes = JSON.parse(user.node_graph);
-
     currency = parseFloat(user.currency);
     research = parseFloat(user.research);
     currentEmissions = getTotalEmissions(nodes);
@@ -289,8 +330,12 @@ updateHeader(currency, research, currentEmissions, emissionsCap);
 
 
 // Adding event listeners
-document.getElementById("unlock-button").addEventListener("click", () => unlockNode())
-document.getElementById("enable-button").addEventListener("click", () => toggleEnableNode())
+document.getElementById("unlock-button").addEventListener("click", () => unlockNode());
+document.getElementById("enable-button").addEventListener("click", () => toggleEnableNode());
+document.getElementById("news-button").addEventListener("click", () => openNews());
+document.getElementById("trading-button").addEventListener("click", () => openEmissionsMarket());
+document.getElementById('trading-quantity').max = emissionsCap;
+document.getElementById('trading-form').addEventListener("submit", submitMarketOffer);
 
 // call updateSimulation to trigger the initial render
 updateSimulation()
