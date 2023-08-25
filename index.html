@@ -20,15 +20,17 @@
   <button class="button-1" id="trading-button">Emissions Trading</button>
   <div id="trading">
     Emissions Market
-    <table class="table table-striped">
-      <tr  class="bg-info"> 
-          <th class="centered">Quantity</th>
-          <th class="centered">Price</th>
-          <th></th>
-      </tr>
-      <tbody id="trading-table"></tbody>
-    </table>
-    <div>
+    <div id="market-table">
+      <table class="table table-striped">
+        <tr  class="bg-info table-head"> 
+            <th class="centered">Quantity</th>
+            <th class="centered">Price</th>
+            <th></th>
+        </tr>
+        <tbody id="trading-table"></tbody>
+      </table>
+    </div>
+    <div class="sell-wrapper">
       Sell Your Emissions Capacity
       <div>
         <form class="form" id="trading-form">

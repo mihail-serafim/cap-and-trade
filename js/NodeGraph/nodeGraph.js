@@ -71,7 +71,7 @@ async function openEmissionsMarket() {
     trading.style.display = 'block';
 
     var emissionsMarketData = await getEmissionsMarketData();
-    buildMarketTable(userId, emissionsMarketData.info);
+    buildMarketTable(userId, currency, emissionsMarketData.info);
 }
 
 async function submitMarketOffer(event) {
@@ -80,10 +80,16 @@ async function submitMarketOffer(event) {
     var quantity = document.getElementById("trading-quantity").value;
     var price = document.getElementById("trading-price").value;
 
+    console.log(quantity)
+    if (!quantity || !price) {
+        return;
+    }
+
     await sendMarketOffer(userId, quantity, price);
 
-    var emissionsMarketData = await getEmissionsMarketData();
-    buildMarketTable(userId, emissionsMarketData.info);
+    // Update the table to show the new offer
+    var  emissionsMarketData = await getEmissionsMarketData();
+    buildMarketTable(userId, currency, emissionsMarketData.info);
 }
 
 function closeEmissionsMarket() {

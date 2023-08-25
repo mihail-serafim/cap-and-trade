@@ -1,5 +1,6 @@
 import { baseNodes, baseLinks } from './graphDefaults.js'  
 import { productionTreeData } from '../Research/researchDefaults.js'
+import { updateHeader } from '../header.js'
 
 export function getNeighbors(node) {
     return baseLinks.reduce(function (neighbors, link) {
@@ -148,32 +149,45 @@ export async function getEmissionsMarketData() {
     return data;
 }
 
-export function buildMarketTable(userId, data){
+export function buildMarketTable(userId, currency, data){
     var table = document.getElementById('trading-table')
     
     var row = "";
     var buttonText;
-    for (var i = 0; i < data.length; i++){
+    for (var i = 0; i < data.length ?? 0; i++) {
         if (data[i].userId != userId) {
             buttonText = `Purchase`
         } else {
-            buttonText = `<img id="trading-cancel" src="/icons/x-solid.svg" alt="X" data-id="${data[i].id}"></img>`
+                buttonText = `<img id="trading-cancel" src="/icons/x-solid.svg" alt="X" data-id="${data[i].id}" data-quantity="${data[i].quantity}" data-price="${data[i].price}" data-userid="${data[i].userId}"></img>`
         }
         row += `<tr>
                         <td class="centered">${data[i].quantity}</td>
                         <td class="centered">${data[i].price}</td>
-                        <td class="centered"><button class="market-button" data-id="${data[i].id}">${buttonText}</button></td>
+                        <td class="centered"><button class="market-button" data-id="${data[i].id}" data-quantity="${data[i].quantity}" data-price="${data[i].price}" data-userid="${data[i].userId}">${buttonText}</button></td>
                 </tr>` 
     }
     table.innerHTML = row
 
     var marketButtons = document.querySelectorAll(".market-button");
     marketButtons.forEach((button) => {
-        button.addEventListener('click', purchaseMarketOffer);
+        button.addEventListener('click', (e) => purchaseMarketOffer(e, userId, currency));
     })
 }
 
 export async function sendMarketOffer(userId, quantity, price) {
+    var emissionsMarketData = await getEmissionsMarketData();
+
+    var existingOffers = 0
+    emissionsMarketData.info.forEach((offer) => {
+         if (offer.userId == userId) {
+            existingOffers += 1;
+         }
+    })
+    if (existingOffers >= 5) {
+        alert('Sorry, you can only have 5 market offers at the same time. Please remove one to make another listing.');
+        return;
+    }
+
     var res = await fetch('http://localhost/cap_and_trade/create-offer', {
         method: 'POST',
         headers: {
@@ -190,12 +204,50 @@ export async function sendMarketOffer(userId, quantity, price) {
     console.log(res);
 }
 
-export async function purchaseMarketOffer(event) {
-    event.preventDefault();
+export async function purchaseMarketOffer(event, userId, currency) {
+    var tradeId = event.target.dataset.id;
+    var quantity = parseFloat(event.target.dataset.quantity);
+    var price = parseFloat(event.target.dataset.price);
+    var offerUserId = event.target.dataset.userid;
 
-    console.log(event.target.dataset.id);
-    // TODO check if money is enough to purchase
-    // if it is, call php script and then update header values by reading from DB.
+    if (userId != offerUserId && currency - price < 0) {
+        alert('Sorry, you need more currency to purchase this offer.');
+        return;
+    }
+    
+    try {
+        var res = await fetch('http://localhost/cap_and_trade/buy-offer', {
+        method: 'PUT',
+        headers: {
+        'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            price: price,
+            quantity: quantity,
+            trade_id: tradeId,
+            seller_user_id: offerUserId,
+            buyer_user_id: userId,
+        })
+    });
+
+    res = await res.json()
+    console.log(res)
+
+    } catch (error) {
+        console.error('Error purchasing offer')
+        console.error(error)
+    } 
+
+    // Update the table to show the new offer
+    var  emissionsMarketData = await getEmissionsMarketData();
+    buildMarketTable(userId, currency, emissionsMarketData.info);
+
+    // Update header values by reading from db
+    var user = await getUser(userId);
+    if(user.status === 1) user = user.info[0];
+    else console.error('Error reading user data');
+
+    updateHeader(user.currency, user.research, user.curr_emissions, user.emissions_cap);
 }
 
 export async function getUser(userId) {
