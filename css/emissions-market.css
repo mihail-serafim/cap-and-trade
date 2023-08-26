@@ -4,7 +4,7 @@
     right: 2%;
     
     width: 25%;
-
+    
     border-radius: 5px;
     background-color: #dbdbd9;
     filter: drop-shadow(1px 1px 1px #757575);
@@ -21,4 +21,23 @@
 
 .centered {
     text-align: center;
+}
+
+#market-table {
+    max-height: 55vh;
+    overflow-y: scroll;
+    border-top: 1px solid black;
+}
+
+.sell-wrapper {
+    border-top: 1px solid black;
+    padding: 15px;
+}
+
+.table-head {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+
+    z-index: 2;
 }
