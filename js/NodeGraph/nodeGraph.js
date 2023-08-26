@@ -291,7 +291,7 @@ var links = [...baseLinks]
 var user = await getUser(userId);
 
 // New user
-if (user.status === 0) {
+if (user?.status === 0) {
     
     // Setting default values
     nodes = [...baseNodes];
