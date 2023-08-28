@@ -50,7 +50,7 @@ export function getNodeColor(node) {
         return 'blue';
     }
 
-    return node.level === 1 ? 'red' : 'orange';
+    return 'orange';
 }
 
 export function getNodeStroke(node, selectedNode) {
