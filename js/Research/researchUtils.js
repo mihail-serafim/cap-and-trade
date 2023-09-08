@@ -27,7 +27,7 @@ export function getNodeColor(node) {
 
 export function getNodeStroke(node, selectedNode) {
     //console.log(node.data.id === selectedNode.data.id ? 4 : 2)
-    return node.data.id === selectedNode.data.id ? 4 : 2;
+    return node.data.id === selectedNode?.data.id ? 4 : 2;
 }
 
 export function getLinkColor(linkChild){

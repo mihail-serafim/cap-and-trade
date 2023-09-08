@@ -16,7 +16,9 @@ import {
     buildMarketTable,
     sendMarketOffer,
     getUser,
-    purchaseMarketOffer,
+    getNodeStrokeColor,
+    runAtUTCTimeOfDay,
+    getYieldIcon,
 } from './nodeUtils.js'
 
 var width = window.innerWidth
@@ -25,13 +27,13 @@ var radius = 10;
 
 const zoom = d3.zoom();
 var svg = d3.select('svg')
-        .attr("viewBox", `${-width/2} ${-height/2} ${width*2} ${height*2}`)
-        .call(zoom.transform, d3.zoomIdentity.scale(3))
+        .attr("viewBox", `${-width/2} ${-height*0.6} ${width*2} ${height*2}`)
+        .call(zoom.transform, d3.zoomIdentity.scale(1))
         .call(zoom.on('zoom', (event) => {
             svg.attr('transform', event.transform);
         }))
         .append("g")
-        .attr('transform', `translate(${-width}, ${-height})scale(${2.9})`);
+        .attr('transform', `translate(${-width+550}, ${-height+300})scale(${2.2})`);
 
 var linkElements,
 nodeElements,
@@ -49,10 +51,11 @@ svg.selectAll(".node")
              return `translate(${d.x},${d.y})`;
        }); 
 
-// simulation setup with all forces
+// Simulation set-up
 var linkForce = d3
     .forceLink()
     .id(function (link) { return link.id })
+    .distance(100)
     .strength(function (link) { return link.strength })
 
 var simulation = d3
@@ -60,19 +63,12 @@ var simulation = d3
     .force('link', linkForce)
     .force('charge', d3.forceManyBody().strength(-200))
     .force('center', d3.forceCenter(width / 2, height / 2))
+    .force('collide', d3.forceCollide(100))
 
 // Track which node is currently selected, and track which panel is open (news/emissions market)
 var selected
 var news = document.getElementById('news');
 var trading = document.getElementById('trading');
-
-async function openEmissionsMarket() {
-    news.style.display = 'none';
-    trading.style.display = 'block';
-
-    var emissionsMarketData = await getEmissionsMarketData();
-    buildMarketTable(userId, currency, emissionsMarketData.info);
-}
 
 async function submitMarketOffer(event) {
     event.preventDefault();
@@ -80,7 +76,6 @@ async function submitMarketOffer(event) {
     var quantity = document.getElementById("trading-quantity").value;
     var price = document.getElementById("trading-price").value;
 
-    console.log(quantity)
     if (!quantity || !price) {
         return;
     }
@@ -89,6 +84,19 @@ async function submitMarketOffer(event) {
 
     // Update the table to show the new offer
     var  emissionsMarketData = await getEmissionsMarketData();
+    buildMarketTable(userId, currency, emissionsMarketData.info);
+
+    emissionsCap -= quantity;
+    updateHeader(currency, research, currentEmissions, emissionsCap);
+}
+
+async function openEmissionsMarket() {
+    news.style.display = 'none';
+    trading.style.display = 'block';
+
+    trading.focus();
+
+    var emissionsMarketData = await getEmissionsMarketData();
     buildMarketTable(userId, currency, emissionsMarketData.info);
 }
 
@@ -99,12 +107,13 @@ function closeEmissionsMarket() {
 function openNews() {
     news.style.display = 'block';
     trading.style.display = 'none';
+
+    news.focus();
 }
 
 function closeNews() {
     news.style.display = 'none';
 }
-
 
 // selectNode is called on clicking a node
 function selectNode(selectedNode) {
@@ -115,6 +124,16 @@ function selectNode(selectedNode) {
 
     // Open node info panel
     openNodeInfo(selectedNode);
+    document.getElementById('node-info').focus();
+}
+
+function closeNode() {
+    var nodeInfo = document.getElementById("node-info");
+
+    nodeInfo.style.display = "none";
+
+    selected = null;
+    nodeElements.transition().duration(75).attr('stroke-width', function (node) { return getNodeStroke(node, null) })
 }
 
 // Opens the node info panel
@@ -122,8 +141,17 @@ function openNodeInfo(selectedNode) {
     var nodeInfo = document.getElementById('node-info');
     nodeInfo.style.display = "block";
 
+    var nodeTitle = document.getElementById('node-title');
+    nodeTitle.innerHTML = `${selectedNode.label}`
+
     var nodeDetails = document.getElementById('node-details');
-    nodeDetails.innerHTML = `${selectedNode.label}`
+    nodeDetails.innerHTML = `${selectedNode.description}`
+
+    var nodeYield = document.getElementById('node-yield');
+    nodeYield.innerHTML = `Yield: ${getYieldIcon(selectedNode.type)} ${selectedNode.yield}`;
+
+    var nodeEmissions = document.getElementById('node-emissions');
+    nodeEmissions.innerHTML = `Emits: <img id="emissions-icon-small" src="/icons/smog-solid.svg"></img> ${selectedNode.emissions}`;
 
     var nodeUnlock = document.getElementById('node-unlock');
     var nodeEnable = document.getElementById('node-enable');
@@ -147,8 +175,8 @@ function openNodeInfo(selectedNode) {
         
         nodeUnlock.insertAdjacentHTML('beforeend', 
             `
-                <div id='node-cost'> 
-                    <span>Cost:</span> <img id="header-coins-small" src="/icons/coins-solid.svg"></img> <span>${selectedNode.cost}</span> 
+                <div id='node-cost' class='info-cost'> 
+                    <span>Cost:</span> <img id="coins-icon-small" src="/icons/coins-solid.svg"></img> <span>${selectedNode.cost}</span> 
                 </div>
             `
         )
@@ -181,7 +209,7 @@ function unlockNode() {
     openNodeInfo(selected)
 
     currency = currency - selected.cost 
-    currentEmissions = getTotalEmissions(nodes)
+    currentEmissions = getTotalEmissions(nodes, researchTrees)
 
     // TODO: send new values to DB
     updateHeader(currency, research, currentEmissions, emissionsCap);
@@ -198,10 +226,11 @@ function toggleEnableNode() {
     nodeElements.classed("animated", true)
     nodeElements.classed("disabled", function (node) { return !node.enabled })
     nodeElements.classed("enabled", function (node) { return node.enabled })
+    nodeElements.attr('stroke', function (node) { return getNodeStrokeColor(node) })
 
     updateEnableButton(selected)
 
-    currentEmissions = getTotalEmissions(nodes)
+    currentEmissions = getTotalEmissions(nodes, researchTrees)
 
     updateHeader(currency, research, currentEmissions, emissionsCap)
     updateDBNodes(userId, nodes, currency, research, currentEmissions, emissionsCap)
@@ -219,7 +248,7 @@ function updateGraph() {
         .append('circle')
         .attr('r', radius)
         .attr('fill', function (node) { return getNodeColor(node) })
-        .attr('stroke', 'black')
+        .attr('stroke', function (node) { return getNodeStrokeColor(node) })
         .classed("disabled", function (node) { return !node.enabled })
         .classed("enabled", function (node) { return node.enabled })
         // we link the selectNode method here
@@ -258,6 +287,20 @@ function updateGraph() {
         .attr('dy', 30)
 
     textElements = textEnter.merge(textElements)
+
+    // Fix positions of starting 3 nodes
+    nodes.forEach((node) => {
+        if (node.id == 'g-1') {
+            node.fx = 0.55*width;
+            node.fy = 0.3*height;
+        } else if (node.id == 's-1') {
+            node.fx = 0.5*width;
+            node.fy = 0.5*height;
+        } else if (node.id == 'r-1') {
+            node.fx = 0.62*width;
+            node.fy = 0.5*height;
+        }
+    })
 }
 
 function updateSimulation() {
@@ -281,19 +324,38 @@ function updateSimulation() {
     simulation.alphaTarget(0).restart()
 }
 
+async function updateUserInfo() {
+    var user = await getUser(userId);
 
-// On page load, query DB for user. If entry doesn't exist, write user with default nodes and initialize session with defaults
-// If user does exist, populate nodes and values with values from db 
-var userId = 6;
+    user = user.info[0];
+
+    currency = parseFloat(user.currency);
+    research = parseFloat(user.research);
+    currentEmissions = getTotalEmissions(nodes, researchTrees);
+    emissionsCap = parseFloat(user.emissions_cap);
+
+    updateHeader(currency, research, currentEmissions, emissionsCap);
+}
+
+// TODO: Read userId from localStorage after login
+var userId = 1;
+
+// After the turn moves forward, refresh the user's info from the DB 
+// Note: Uses UTC time (convert it from your local time!)
+runAtUTCTimeOfDay(7, 1, updateUserInfo);
 
 var nodes;
+var researchTrees;
 var currency;
 var research;
 var currentEmissions;
 var emissionsCap;
 
-var links = [...baseLinks]
+var links = [...baseLinks];
 
+
+// On page load, query DB for user. If entry doesn't exist, write user with default nodes and initialize session with defaults
+// If user does exist, populate nodes and values with values from DB 
 var user = await getUser(userId);
 
 // New user
@@ -301,17 +363,17 @@ if (user?.status === 0) {
     
     // Setting default values
     nodes = [...baseNodes];
+    researchTrees = productionTreeData;
     currency = 1000;
     research = 10;
-    currentEmissions = getTotalEmissions(nodes);
+    currentEmissions = getTotalEmissions(nodes, researchTrees);
     emissionsCap = 200;
-
 
     // Write default values to DB
     var userDefaults = {
         id: userId,
         node_graph: nodes,
-        research_trees: productionTreeData,
+        research_trees: researchTrees,
         currency: currency,
         research: research,
         curr_emissions: currentEmissions,
@@ -325,15 +387,15 @@ if (user?.status === 0) {
     user = user.info[0];
 
     nodes = JSON.parse(user.node_graph);
+    researchTrees = JSON.parse(user.research_trees);
     currency = parseFloat(user.currency);
     research = parseFloat(user.research);
-    currentEmissions = getTotalEmissions(nodes);
+    currentEmissions = getTotalEmissions(nodes, researchTrees);
     emissionsCap = parseFloat(user.emissions_cap);
 }
 
 // Update header
 updateHeader(currency, research, currentEmissions, emissionsCap);
-
 
 // Adding event listeners
 document.getElementById("unlock-button").addEventListener("click", () => unlockNode());
@@ -342,6 +404,10 @@ document.getElementById("news-button").addEventListener("click", () => openNews(
 document.getElementById("trading-button").addEventListener("click", () => openEmissionsMarket());
 document.getElementById('trading-quantity').max = emissionsCap;
 document.getElementById('trading-form').addEventListener("submit", submitMarketOffer);
+document.getElementById('market-close-button').addEventListener("click", () => closeEmissionsMarket());
+document.getElementById('news-close-button').addEventListener("click", () => closeNews());
+document.getElementById('node-close-button').addEventListener("click", () => closeNode());
+
 
 // call updateSimulation to trigger the initial render
 updateSimulation()

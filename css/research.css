@@ -1,6 +1,5 @@
 #research-content {
     height: 100%;
-    overflow: scroll;
 }
 
 #research-info {
@@ -11,9 +10,9 @@
     font-weight: bold;
     font-size: 35px;
 
-    margin-top: 20px;
-    margin-left: 40%;
-    margin-right: 40%;
+    margin-top: 30px;
+    margin-left: 45%;
+    margin-right: auto;
 }
 
 .research-icon {
@@ -32,3 +31,16 @@
     fill: none;
     stroke-width: 3px;
 }
+
+#close-icon {
+    margin-left: 6px;
+}
+
+#research-title {
+    padding-bottom: 15px;
+}
+
+#research-unlock {
+    padding-top: 15px;
+}
+

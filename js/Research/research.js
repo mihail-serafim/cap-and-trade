@@ -39,10 +39,8 @@ function unlockNode() {
         ...treeNodes[0].data,
     }
 
-    console.log(tree)
-    console.log(treeNodes[0])
-    updateDBResearch(userId, tree, currency, research, currentEmissions, emissionsCap); 
-    updateHeader(currency, research, currentEmissions, emissionsCap);
+    updateDBResearch(userId, tree, currency, research, getTotalEmissions(nodes, researchTree), emissionsCap); 
+    updateHeader(currency, research, getTotalEmissions(nodes, researchTree), emissionsCap);
 
     d3.selectAll('rect').transition().duration(500).style("fill", node => getNodeColor(node))
     d3.selectAll('.link').transition().duration(500).style("stroke", linkChild => getLinkColor(linkChild))
@@ -53,14 +51,17 @@ function openResearchInfo(selectedNode) {
     var researchInfo = document.getElementById('research-info');
     researchInfo.style.display = "block";
 
-    var researchDetails = document.getElementById('research-details');
+    var researchDetails = document.getElementById('research-title');
     researchDetails.innerHTML = `${selectedNode.data.name}`
+    
+    var researchDetails = document.getElementById('research-details');
+    researchDetails.innerHTML = `${selectedNode.data.description}`
 
     var researchUnlock = document.getElementById('research-unlock');
 
     // Node can be purchased if parent of selected node is unlocked and node itself is locked
     if (!selectedNode.parent.data.locked && selectedNode.data.locked) {
-        researchUnlock.style.display = "block";
+        researchUnlock.style.display = "flex";
         
     // Node has already been purchased  
     } else if (!selectedNode.data.locked) {
@@ -72,10 +73,18 @@ function openResearchInfo(selectedNode) {
     }
 }
 
+function closeResearchInfo() {
+    var researchInfo = document.getElementById('research-info');
+    researchInfo.style.display = "none"; 
+    
+    selected = null;
+    d3.selectAll('rect').style('stroke-width', function (node) { return getNodeStroke(node, null) })
+}
+
 function displayTree(treeData, svgId) {
     // set the dimensions of the diagram
     var width = window.innerWidth
-    var height = window.innerHeight
+    var height = window.innerHeight*1.4
 
     var nodeElements, linkElements;
     
@@ -105,7 +114,7 @@ function displayTree(treeData, svgId) {
             }))
 
     const g = svg.append("g")
-            .attr('transform', `translate(${225}, ${-45})scale(${0.6})`);;
+            .attr('transform', `translate(${225}, ${-20})scale(${0.6})`);;
 
     // adds the links between the nodes
     linkElements = g.selectAll(".link")
@@ -132,9 +141,9 @@ function displayTree(treeData, svgId) {
     // adds the text to the node
     nodeElements.append("text")
         .attr("dy", ".35em")
-        .attr("x", d => d.children ? 10 * -1 : 10 + nodeWidth)
+        .attr("x", 10 + nodeWidth)
         .attr("y", d => - 15)
-        .style("text-anchor", d => d.children ? "end" : "start")
+        .style("text-anchor", "start")
         .style("font-size", "26px")
         .style("font-weight", 500)
         .text(d => d.data.name);
@@ -169,8 +178,8 @@ function displayTree(treeData, svgId) {
 }
 
 
-// On page load
-var userId = 6;
+// TODO: Read userId from localStorage after login
+var userId = 1;
 
 var nodes;
 var researchTree = productionTreeData;
@@ -186,13 +195,10 @@ if (user.status !== 0) {
 
     nodes = JSON.parse(user.node_graph);
     researchTree = JSON.parse(user.research_trees);
-    
-    console.log('current user found')
-    console.log(researchTree)
 
     currency = parseFloat(user.currency);
     research = parseFloat(user.research);
-    currentEmissions = getTotalEmissions(nodes);
+    currentEmissions = getTotalEmissions(nodes, researchTree);
     emissionsCap = parseFloat(user.emissions_cap);
 } 
 
@@ -201,7 +207,7 @@ updateHeader(currency, research, currentEmissions, emissionsCap);
 
 // Adding event listeners
 document.getElementById("unlock-button").addEventListener("click", () => unlockNode());
-
+document.getElementById('research-close-button').addEventListener("click", () => closeResearchInfo());
 
 // Rendering trees
 displayTree(researchTree, "production-research");

@@ -16,8 +16,8 @@ if($_SERVER['REQUEST_METHOD'] == "PUT"){
 	error_log($buyer_user_id);
 	error_log($seller_user_id);
 
-	// Seller gains currency, loses emissions capacity
-	$sql = "UPDATE `user_saves` SET currency = currency + $price, emissions_cap = emissions_cap - $quantity WHERE id = $seller_user_id;";
+	// Seller gains currency
+	$sql = "UPDATE `user_saves` SET currency = currency + $price WHERE id = $seller_user_id;";
 	mysqli_query($conn, $sql);
 	error_log(mysqli_error($conn));
 

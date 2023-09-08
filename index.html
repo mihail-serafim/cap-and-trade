@@ -15,14 +15,18 @@
   </a>
   
   <button class="button-1" id="news-button">News</button>
-  <div id="news">News</div>
+  <div id="news" tabindex="0">
+    News
+
+    <div id="news-close-button" class="close-button"><img id="close-icon" src="/icons/xmark-solid.svg"></img></div>
+  </div>
 
   <button class="button-1" id="trading-button">Emissions Trading</button>
-  <div id="trading">
-    Emissions Market
+  <div id="trading" tabindex="0">
+    <div id="buy-emissions-title">Emissions Market</div>
     <div id="market-table">
       <table class="table table-striped">
-        <tr  class="bg-info table-head"> 
+        <tr  class="table-head"> 
             <th class="centered">Quantity</th>
             <th class="centered">Price</th>
             <th></th>
@@ -31,36 +35,46 @@
       </table>
     </div>
     <div class="sell-wrapper">
-      Sell Your Emissions Capacity
+      <div id="sell-emissions-title">Sell Your Emissions Capacity</div>
       <div>
         <form class="form" id="trading-form">
-      
-          <label for="quantity" class="form-label">Quantity</label>
-          <input type="number" placeholder="Quantity" class="form-input" min="1" id="trading-quantity" />
-          
-          <label for="price" class="form-label">Price</label>
-          <input type="number" placeholder="Price" class="form-input" min="1" id="trading-price" />
+          <span>
+            <label for="quantity" class="form-label">Quantity:</label>
+            <input type="number" class="form-input" min="1" id="trading-quantity" />
+          </span>
 
-          <button type="submit" placeholder="Price" class="form-input" id="trading-submit" >Post Offer</button>
+          <span>
+            <label for="price" class="form-label">Price:</label>
+            <input type="number" class="form-input" min="1" id="trading-price" />
+          </span>
+
+          <button type="submit" class="form-input" id="trading-submit" >Post Offer</button>
           
         </form>
       </div>
     </div>
-
+    <div id="market-close-button" class="close-button"><img id="close-icon" src="/icons/xmark-solid.svg"></img></div>
 
   </div>
 
   <svg class="node-graph"></svg>
-  <div id="node-info" class="interaction-popup">
+
+  <div id="node-info" class="interaction-popup" tabindex="0">
     <div class="popup-wrapper">
-      <div id="node-details"></div>
-      <div id="node-unlock" style="display:none">
+      <div id="node-title" class="info-title"></div>
+      <div id="node-details" class="info-details"></div>
+      <div id="node-values">
+        <div id="node-yield"></div>
+        <div id="node-emissions"></div>
+      </div>
+      <div id="node-unlock" class="info-unlock">
         <button id="unlock-button" class="button-2">Unlock</button>
       </div>
-      <div id="node-enable" style="display:none">
+      <div id="node-enable">
         <button id="enable-button" class="button-2"></button>
       </div>
-  </div>
+    </div>
+    <div id="node-close-button" class="close-button"><img id="close-icon" src="/icons/xmark-solid.svg"></img></div>
 </div>
 
 <script src="https://d3js.org/d3.v4.min.js"></script>

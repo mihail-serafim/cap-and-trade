@@ -17,7 +17,6 @@ html {
     position:absolute;
     bottom: 15px;
     background-color: #dbdbd9;
-    height: 30%;
     width: 15%;
     border-radius: 6px;
 }
@@ -26,11 +25,6 @@ html {
     padding: 20px;
     display: flex;
     flex-direction: column;
-}
-
-#node-unlock, #node-enable {
-    align-self: center;
-    padding-top: 10px;
 }
 
 .main {
@@ -51,15 +45,85 @@ html {
 
 #node-info {
     left: 15px;
+    outline: none;
+    border: 1px solid #757575;
 }
 
-#node-unlock {
+.info-title {
+    font-weight: bold;
+    padding-bottom: 8px;
+}
+
+.info-details {
+    font-size: 0.95em;
+}
+
+#node-values {
+    padding-top: 7px;
+    padding-bottom: 10px;
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+}
+
+#node-yield {
+    padding-right: 10px;
+}
+
+#gold-icon-small {
+    height: 40px;
+    width: 30px;
+    filter: invert(67%) sepia(79%) saturate(406%) hue-rotate(4deg) brightness(93%) contrast(83%) drop-shadow(1px 1px 1px #757575);
+}
+
+#silver-icon-small {
+    height: 40px;
+    width: 30px;
+    filter: invert(93%) sepia(0%) saturate(464%) hue-rotate(214deg) brightness(86%) contrast(98%) drop-shadow(1px 1px 1px #757575);
+}
+
+#research-icon-small {
+    height: 20px;
+    width: 15px;
+    filter: invert(30%) sepia(69%) saturate(3022%) hue-rotate(210deg) brightness(104%) drop-shadow(1px 1px 1px #757575);
+
+    margin-left: 6px; 
+    margin-right: 2px;
+}
+
+#emissions-icon-small {
+    height: 25px;
+    width: 20px;
+    filter: invert(25%) sepia(59%) saturate(5105%) hue-rotate(343deg) brightness(99%) contrast(104%) drop-shadow(1px 1px 1px #757575);
+
+    margin-left: 2px; 
+    margin-right: 2px;
+}
+
+#coins-icon-small {
+    height: 25px;
+    width: 20px;
+    filter: invert(99%) sepia(38%) saturate(5390%) hue-rotate(323deg) brightness(99%) contrast(91%) drop-shadow(1px 1px 1px #757575);
+}
+
+.info-unlock {
+    display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
-#node-cost {
+#node-enable {
+    display: none;
+}
+
+#node-unlock, #node-enable {
+    align-self: center;
+}
+
+.info-cost {
     display: flex;
     margin-top: 5px;
     padding-left: 5px;

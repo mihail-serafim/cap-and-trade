@@ -43,6 +43,10 @@
 			$type = intval($type);
 			$supply = intval($supply);
 
+			if ($supply < 1) {
+				$supply = 1;
+			}
+
 			// Demand = random value uniformly distributed from 0.7*supply to 1.3*supply
 			$demand = $supply* (0.7 + 0.6*rand(0, getrandmax())/getrandmax());
 

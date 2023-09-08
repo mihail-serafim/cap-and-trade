@@ -1,5 +1,4 @@
-import { baseNodes, baseLinks } from './graphDefaults.js'  
-import { productionTreeData } from '../Research/researchDefaults.js'
+import { baseLinks } from './graphDefaults.js'  
 import { updateHeader } from '../header.js'
 
 export function getNeighbors(node) {
@@ -26,12 +25,12 @@ export function getNodeY(currentNode) {
     var height = window.innerHeight
     var radius = 6;
 
-    return Math.max(190, Math.min(height - radius - 200, currentNode.y));
+    return Math.max(110, Math.min(height - radius - 150, currentNode.y));
 }
 
 export function getNodeOpacity(node) {
     if (!node.enabled) {
-        return 0.6;
+        return 0.3;
     } else {
         return 1;
     }
@@ -43,18 +42,26 @@ export function getNodeColor(node) {
     }
 
     if (node.type === 0) {
-        return 'orange';
+        return '#d4af37';
     } else if (node.type === 1) {
-        return 'red';
+        return '#d8d8d8';
     } else if (node.type === 2) {
-        return 'blue';
+        return '#03afff';
     }
 
     return 'orange';
 }
 
+export function getNodeStrokeColor(node) {
+    if (!node.enabled) {
+        return 'red';
+    }
+
+    return 'black';
+}
+
 export function getNodeStroke(node, selectedNode) {
-    return node.id === selectedNode.id ? 3 : 1
+    return node.id === selectedNode?.id ? 3 : 1
 }
 
 export function getLinkColor(link, nodes, isStartup) { 
@@ -80,6 +87,32 @@ export function getLinkColor(link, nodes, isStartup) {
     }
 }
 
+export function getYieldIcon(type) {
+    var id;
+    var src;
+
+    switch (type){
+        case 0:
+            id = 'gold';
+            src = 'ingot';
+            break;
+        case 1:
+            id = 'silver';
+            src = 'ingot';
+            break;
+        case 2:
+            id = 'research';
+            src = 'flask-solid';
+            break;
+        default:
+            id = '';
+            src = '';
+    }
+        
+
+    return `<img id="${id}-icon-small" src="/icons/${src}.svg"></img>`;
+}
+
 export function updateEnableButton(selectedNode) {
     var enableButton = document.getElementById('enable-button');
 
@@ -95,8 +128,40 @@ export function updateEnableButton(selectedNode) {
     }
 }
 
-export function getTotalEmissions(nodes) {
-   return nodes.reduce((totalEmissions, node) => totalEmissions + (node.enabled && !node.locked ? node.emissions : 0) , 0);
+export function getTotalEmissions(nodes, researchTrees) {
+    var emissionsResearchNode = researchTrees.children[1]
+    var cleanProduction = emissionsResearchNode.children[0];
+    var rAndDAllowances = emissionsResearchNode.children[1].children[0];
+    var multiplier = 1;
+
+    if (!cleanProduction.locked) {
+        multiplier -= cleanProduction.multiplier;
+    }
+
+
+    return multiplier * nodes.reduce((totalEmissions, node) => {
+        
+        multiplier = 1;
+        if (node.type === 2 && !rAndDAllowances.locked) {
+            multiplier -= rAndDAllowances.multiplier;
+        } 
+
+        return totalEmissions + (node.enabled && !node.locked ? node.emissions * multiplier : 0); 
+    }, 0);
+}
+
+export async function getUser(userId) {
+    try {
+        // Read user data from DB on page load
+        var user = await fetch(`http://localhost/cap_and_trade/get-user?id=${userId}`);
+        user = await user.json();
+        console.log(user);
+        
+    } catch (e) {
+        console.log('error occurred when reading user data');
+    }
+
+    return user;
 }
 
 // Used to convert JSON data into a form which can be sent to the server
@@ -163,7 +228,7 @@ export function buildMarketTable(userId, currency, data){
         row += `<tr>
                         <td class="centered">${data[i].quantity}</td>
                         <td class="centered">${data[i].price}</td>
-                        <td class="centered"><button class="market-button" data-id="${data[i].id}" data-quantity="${data[i].quantity}" data-price="${data[i].price}" data-userid="${data[i].userId}">${buttonText}</button></td>
+                        <td class="centered"><button class="market-button market-input" data-id="${data[i].id}" data-quantity="${data[i].quantity}" data-price="${data[i].price}" data-userid="${data[i].userId}">${buttonText}</button></td>
                 </tr>` 
     }
     table.innerHTML = row
@@ -250,16 +315,22 @@ export async function purchaseMarketOffer(event, userId, currency) {
     updateHeader(user.currency, user.research, user.curr_emissions, user.emissions_cap);
 }
 
-export async function getUser(userId) {
-    try {
-        // Read user data from DB on page load
-        var user = await fetch(`http://localhost/cap_and_trade/get-user?id=${userId}`);
-        user = await user.json();
-        console.log(user);
-        
-    } catch (e) {
-        console.log('error occurred when reading user data');
-    }
+export function runAtUTCTimeOfDay(hour, minutes, func)
+{
+  const twentyFourHours = 86400000;
+  const now = new Date();
 
-    return user;
+  let eta_ms = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), hour, minutes, 0, 0)).getTime() - now.getTime();
+  if (eta_ms < 0)
+  {
+    eta_ms += twentyFourHours;
+  }
+
+  setTimeout(function() {
+    //run once
+    func();
+    
+    // run every 24 hours from now on
+    setInterval(func, twentyFourHours);
+  }, eta_ms);
 }

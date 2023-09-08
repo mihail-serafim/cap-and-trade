@@ -6,7 +6,7 @@
     width: 25%;
     
     border-radius: 5px;
-    background-color: #dbdbd9;
+    background-color: #ededed;
     filter: drop-shadow(1px 1px 1px #757575);
 
     display: none;
@@ -25,7 +25,7 @@
 
 #market-table {
     max-height: 55vh;
-    overflow-y: scroll;
+    overflow-y: auto;
     border-top: 1px solid black;
 }
 
@@ -39,5 +39,43 @@
     position: sticky;
     top: 0;
 
+    background-color: #1CB0F6 !important;
+
     z-index: 2;
+}
+
+#buy-emissions-title {
+    font-weight: bold;
+    font-size: 25px;
+
+    text-align: center;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+#sell-emissions-title {
+    font-weight: bold;
+    font-size: 15px;
+    padding-bottom: 10px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+#trading-quantity {
+    width: 25%;
+    margin-left: 5px;
+}
+
+#trading-price {
+    width: 25%;
+    margin-left: 30px;
+}
+
+#trading-submit {
+    width: 40%;
+    align-self: center;
+    margin-top: 15px;
 }
